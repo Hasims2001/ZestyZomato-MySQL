@@ -114,8 +114,16 @@ def udpateProfile():
         user_data = decoded_token['user']
 
         user = Users.query.filter_by(email=user_data['email']).first()
+        data = request.get_json()
+        if 'name' in data:
+            user.name = data['name']
+        if 'address' in data:
+            user.address = data['address']
+        if 'pincode' in data:
+            user.pincode = data['pincode']
 
-        
+        db.session.commit()
+        return jsonify({'issue': False,'message': f'user data updated successfully!'})
     except Exception as e:
         return jsonify({'issue': True, 'message': 'Invalid token'})
 
@@ -128,7 +136,6 @@ def MenuUpdates():
             token = request.headers.get('Authorization')
             decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             user_data = decoded_token['user']
-            print(user_data)
             if(user_data['role'] == 'admin' and dish['name'] and dish['price'] and dish['availability'] and dish['store']):
                 new_dish = Menu(name=dish['name'], price=dish['price'], availability=dish['availability'], store=dish['store'])
                 db.session.add(new_dish)
@@ -142,7 +149,7 @@ def MenuUpdates():
         except jwt.InvalidTokenError:
             return jsonify({'issue': True,'message': 'Invalid token'}), 401
         except Exception as e:
-            return jsonify({'issue': True, 'message': e})
+            return jsonify({'issue': True, 'message': str(e)}), 401
 
 
     # get request
@@ -217,7 +224,10 @@ def ordersRoute():
     if(request.method == "POST"):
         data = request.get_json()
         try:
-            user = Users.query.filter_by(email=data['email']).first()
+            token = request.headers.get('Authorization')
+            decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            user_data = decoded_token['user']
+            user = Users.query.filter_by(email=user_data['email']).first()
 
             if(user['address'] == "" or user['pincode'] == ""):
                 return jsonify({'issue': True,'message': "please compelete your profile first."})
@@ -263,8 +273,12 @@ def ordersRoute():
             db.session.add(new_order)
             db.session.commit()
             return jsonify({'message': "order added", 'order': {"items":items, "totalBill":total, "name":data['name'], "email":data['email'], "date":today,"store":data['store'], "promocode":data['promocode'], "status":"received"}})
+        except jwt.ExpiredSignatureError:
+            return jsonify({'issue': True,'message': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'issue': True,'message': 'Invalid token'}), 401
         except Exception as e:
-            return jsonify({'issue': True, 'message': f'something is wrong at {str(e)}'})
+            return jsonify({'issue': True, 'message': str(e)}), 401
 
 
      # Get request    
