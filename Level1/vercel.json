@@ -1,15 +1,15 @@
 {
+    "version": 2,
     "builds": [
         {
-            "src":"ZestyZomato.py",
-            "use": "@vercel/python"
+            "src": "ZestyZomato.py",
+            "use": "@liudonghua123/now-flask"
         }
     ],
     "routes": [
         {
-            "src": "/(.*)",
+            "src": "(.*)",
             "dest": "ZestyZomato.py"
         }
     ]
-}
-
+  }

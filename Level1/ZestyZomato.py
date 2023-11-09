@@ -112,7 +112,7 @@ def udpateProfile():
         token = request.headers.get('Authorization')
         decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
         user_data = decoded_token['user']
-
+        print(user_data)
         user = Users.query.filter_by(email=user_data['email']).first()
         data = request.get_json()
         if 'name' in data:
