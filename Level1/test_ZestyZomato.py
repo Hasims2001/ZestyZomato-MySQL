@@ -1,5 +1,5 @@
 import unittest
-from ZestyZomato import app
+from api import app
 import json
 
 class ZomatoTest(unittest.TestCase):
