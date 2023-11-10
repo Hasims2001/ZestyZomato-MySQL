@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 from passlib.hash import pbkdf2_sha256 
 app = Flask(__name__)
 load_dotenv()
-SECRET_KEY = "your_secret_key" # os.getenv("SECRET_KEY")
-app.secret_key = "secret" # os.getenv("APP_SECRET")
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://sql12660533:dKxzCinVvC@sql12.freesqldatabase.com:3306/sql12660533" # os.getenv("DATABASE_URI")
+SECRET_KEY = os.getenv("SECRET_KEY")
+app.secret_key =  os.getenv("APP_SECRET")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -112,7 +112,6 @@ def udpateProfile():
         token = request.headers.get('Authorization')
         decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
         user_data = decoded_token['user']
-        print(user_data)
         user = Users.query.filter_by(email=user_data['email']).first()
         data = request.get_json()
         if 'name' in data:
