@@ -1,5 +1,5 @@
 import unittest
-from api import app
+import app
 import json
 
 class ZomatoTest(unittest.TestCase):
